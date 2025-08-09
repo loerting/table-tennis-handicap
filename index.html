@@ -67,6 +67,7 @@
           src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
   <!-- TikZJax -->
+  <link rel="stylesheet" type="text/css" href="https://tikzjax.com/v1/fonts.css">
   <script src="https://tikzjax.com/v1/tikzjax.js"></script>
 </head>
 <body>
@@ -120,7 +121,7 @@
   </p>
 
   <div>
-    <pre class="tikzjax">
+    <script type="text/tikz">
 \begin{tikzpicture}[->, >=stealth', shorten >=2pt, node distance=1.2cm and 1.2cm, line width=0.5pt]
     \tikzstyle{state} = [circle, draw, minimum size=1.3cm, inner sep=0pt, text centered]
     \tikzstyle{dots} = [minimum size=1.3cm, inner sep=0pt, text centered]
@@ -135,7 +136,7 @@
     \path (current) edge node [above] {$1 - p$} (losep);
     \path (current) edge node [left] {$p$} (winp);
 \end{tikzpicture}
-    </pre>
+    </script>
     <p class="caption">Figure: Simplified Markov chain fragment...</p>
   </div>
 
