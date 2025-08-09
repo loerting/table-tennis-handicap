@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Table Tennis Optimal Handicap Points</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #fff;
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1rem;
+    color: #333;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: 4px 6px;
+    text-align: center;
+  }
+  th {
+    background: #f0f0f0;
+  }
+  tbody tr:nth-child(even) {
+    background: #fafafa;
+  }
+  .text-green-600 {
+    color: #16a34a;
+  }
+  .text-blue-600 {
+    color: #2563eb;
+  }
+  .text-gray-400 {
+    color: #9ca3af;
+  }
+  .font-bold {
+    font-weight: 700;
+  }
+  .notes {
+    margin-top: 1.5rem;
+    font-size: 11px;
+    color: #555;
+  }
+</style>
+</head>
+<body>
+  <h1>Table Tennis Optimal Handicap Points</h1>
+
+  <div style="overflow-x:auto;">
+    <table id="handicapTable">
+      <thead>
+        <tr>
+          <th rowspan="2">Rating<br>Difference</th>
+          <th colspan="5">2 Sets Win</th>
+          <th colspan="5">3 Sets Win</th>
+          <th colspan="5">4 Sets Win</th>
+        </tr>
+        <tr>
+          <th>Point<br>Win %</th>
+          <th>Set<br>Win %</th>
+          <th>Match<br>Win %</th>
+          <th>Best<br>Handicap</th>
+          <th>Final<br>Win %</th>
+          <th>Point<br>Win %</th>
+          <th>Set<br>Win %</th>
+          <th>Match<br>Win %</th>
+          <th>Best<br>Handicap</th>
+          <th>Final<br>Win %</th>
+          <th>Point<br>Win %</th>
+          <th>Set<br>Win %</th>
+          <th>Match<br>Win %</th>
+          <th>Best<br>Handicap</th>
+          <th>Final<br>Win %</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="notes">
+    <p><strong>Note:</strong> All probabilities shown are for the weaker player (lower rated player).</p>
+    <p><strong>Best Handicap:</strong> Number of points the weaker player starts with in each set (0 means no handicap needed).</p>
+    <p><strong>Final Win:</strong> Weaker player's match win probability after applying the optimal handicap.</p>
+    <p><strong>Green values:</strong> Significant improvement in competitive balance (5%+ increase in win probability).</p>
+  </div>
+
+<script>
+  // Probability-of-upset function from ratingscentral.com
+  function pi(x) {
+    return 1 / (1 + Math.exp(x / 67));
+  }
+
+  // Binomial coefficient calculation
+  function binomial(n, k) {
+    if (k > n || k < 0) return 0;
+    if (k === 0 || k === n) return 1;
+    
+    let result = 1;
+    for (let i = 1; i <= k; i++) {
+      result = result * (n - i + 1) / i;
+    }
+    return result;
+  }
+
+  // Calculate set win probability given point-win probability (closed form)
+  function calculateSetWinProb(p) {
+    let directProb = 0;
+    for (let j = 0; j <= 9; j++) {
+      directProb += binomial(10 + j, j) * Math.pow(p, 11) * Math.pow(1 - p, j);
+    }
+    const reachDeuce = binomial(20, 10) * Math.pow(p, 10) * Math.pow(1 - p, 10);
+    const winDeuce = (p * p) / (p * p + (1 - p) * (1 - p));
+    const deuceProb = reachDeuce * winDeuce;
+    return directProb + deuceProb;
+  }
+
+  // Calculate match win probability given set-win probability
+  function calculateMatchWinProb(setWinProb, setsToWin) {
+    let matchWinProb = 0;
+    for (let k = 0; k < setsToWin; k++) {
+      const binomCoeff = binomial(setsToWin - 1 + k, k);
+      matchWinProb += binomCoeff * Math.pow(setWinProb, setsToWin) * Math.pow(1 - setWinProb, k);
+    }
+    return matchWinProb;
+  }
+
+  // Calculate point-win probability from match-win probability using binary search
+  function calculatePointWinProb(targetMatchProb, setsToWin) {
+    let low = 0.001, high = 0.999;
+    const tolerance = 1e-8;
+    
+    for (let iter = 0; iter < 100; iter++) {
+      const mid = (low + high) / 2;
+      const setProb = calculateSetWinProb(mid);
+      const matchProb = calculateMatchWinProb(setProb, setsToWin);
+      
+      if (Math.abs(matchProb - targetMatchProb) < tolerance) {
+        return mid;
+      }
+      
+      if (matchProb < targetMatchProb) {
+        low = mid;
+      } else {
+        high = mid;
+      }
+    }
+    return (low + high) / 2;
+  }
+
+  // Dynamic programming to calculate P(i,j) with proper boundary conditions
+  function calculateProbabilities(p) {
+    const P = Array(22).fill(null).map(() => Array(22).fill(0));
+    
+    for (let j = 0; j <= 9; j++) {
+      P[11][j] = 1;
+    }
+    for (let i = 0; i <= 9; i++) {
+      P[i][11] = 0;
+    }
+    for (let i = 10; i <= 20; i++) {
+      for (let j = 10; j <= 20; j++) {
+        if (i >= j + 2) P[i][j] = 1;
+        else if (j >= i + 2) P[i][j] = 0;
+      }
+    }
+    P[10][10] = (p * p) / (p * p + (1 - p) * (1 - p));
+    
+    for (let sum = 19; sum >= 0; sum--) {
+      for (let i = 0; i <= Math.min(10, sum); i++) {
+        const j = sum - i;
+        if (j >= 0 && j <= 10 && (i < 10 || j < 10)) {
+          P[i][j] = p * P[i + 1][j] + (1 - p) * P[i][j + 1];
+        }
+      }
+    }
+    return P;
+  }
+
+  // Calculate set win probability with handicap
+  function calculateSetWinProbWithHandicap(p, handicap) {
+    const P = calculateProbabilities(p);
+    return P[handicap][0];
+  }
+
+  // Calculate optimal handicap for given rating difference and sets to win
+  function calculateOptimalHandicap(ratingDiff, setsToWin) {
+    if (ratingDiff === 0) return { handicap: 0, finalMatchProb: 0.5 };
+    
+    const targetMatchProb = pi(ratingDiff);
+    const pointWinProb = calculatePointWinProb(targetMatchProb, setsToWin);
+    
+    let bestHandicap = 0;
+    let bestMatchProb = targetMatchProb;
+    let bestDiff = Math.abs(targetMatchProb - 0.5);
+    
+    for (let h = 0; h <= 10; h++) {
+      const setWinProbWithHandicap = calculateSetWinProbWithHandicap(pointWinProb, h);
+      const matchWinProbWithHandicap = calculateMatchWinProb(setWinProbWithHandicap, setsToWin);
+      
+      const diff = Math.abs(matchWinProbWithHandicap - 0.5);
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        bestHandicap = h;
+        bestMatchProb = matchWinProbWithHandicap;
+      }
+    }
+    return { handicap: bestHandicap, finalMatchProb: bestMatchProb };
+  }
+
+  // On page load, generate and fill the table
+  function generateResults() {
+    const tbody = document.querySelector('#handicapTable tbody');
+    for (let ratingDiff = 0; ratingDiff <= 1000; ratingDiff += 50) {
+      const tr = document.createElement('tr');
+      if ((ratingDiff / 50) % 2 === 1) tr.style.backgroundColor = '#fafafa';
+
+      const tdRating = document.createElement('td');
+      tdRating.textContent = ratingDiff;
+      tdRating.style.fontWeight = '600';
+      tdRating.style.padding = '4px 6px';
+      tr.appendChild(tdRating);
+
+      [2, 3, 4].forEach(setsToWin => {
+        const targetMatchProb = pi(ratingDiff);
+        const pointWinProb = ratingDiff === 0 ? 0.5 : calculatePointWinProb(targetMatchProb, setsToWin);
+        const setWinProb = calculateSetWinProb(pointWinProb);
+        const { handicap: optimalHandicap, finalMatchProb } = calculateOptimalHandicap(ratingDiff, setsToWin);
+
+        const improvement = finalMatchProb > targetMatchProb + 0.05;
+        const improvementClass = improvement ? 'text-green-600' : '';
+        const handicapClass = optimalHandicap > 0 ? 'text-blue-600' : 'text-gray-400';
+
+        const createCell = (text, className) => {
+          const td = document.createElement('td');
+          td.textContent = text;
+          if (className) td.className = className;
+          return td;
+        };
+
+        tr.appendChild(createCell((pointWinProb * 100).toFixed(1) + '%'));
+        tr.appendChild(createCell((setWinProb * 100).toFixed(1) + '%'));
+        tr.appendChild(createCell((targetMatchProb * 100).toFixed(1) + '%'));
+        tr.appendChild(createCell(optimalHandicap, 'font-bold ' + handicapClass));
+        tr.appendChild(createCell((finalMatchProb * 100).toFixed(1) + '%', 'font-bold ' + improvementClass));
+      });
+
+      tbody.appendChild(tr);
+    }
+  }
+
+  window.onload = generateResults;
+</script>
+
+</body>
+</html>
