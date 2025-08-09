@@ -52,6 +52,22 @@
     color: #555;
   }
 </style>
+  <!-- MathJax -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']],
+        packages: {'[+]': ['ams']}
+      },
+      svg: {fontCache: 'global'}
+    };
+  </script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+  <!-- TikZJax -->
+  <script src="https://tikzjax.com/v1/tikzjax.js"></script>
 </head>
 <body>
   <h1>Table Tennis Optimal Handicap Points</h1>
@@ -93,6 +109,45 @@
     <p><strong>Final Win:</strong> Weaker player's match win probability after applying the optimal handicap.</p>
     <p><strong>Green values:</strong> Significant improvement in competitive balance (5%+ increase in win probability).</p>
   </div>
+
+  <h1>Probabilistic Model</h1>
+
+  <p>
+    Consider a match between two players, A and B. We assume a fixed point-winning probability \( p \) for player A. 
+    While this assumption simplifies the model, it is not entirely realistic, as in real-world scenarios the 
+    point-winning probability depends on who is serving and other external factors. The probability that 
+    player B wins a point is then \( 1 - p \).
+  </p>
+
+  <div>
+    <pre class="tikzjax">
+\begin{tikzpicture}[->, >=stealth', shorten >=2pt, node distance=1.2cm and 1.2cm, line width=0.5pt]
+    \tikzstyle{state} = [circle, draw, minimum size=1.3cm, inner sep=0pt, text centered]
+    \tikzstyle{dots} = [minimum size=1.3cm, inner sep=0pt, text centered]
+
+    \node [state] (current) {$i$ : $j$};
+    \node [state] (losep) [right=of current] {$i$ : $j+1$};
+    \node [state] (winp) [below=of current] {$i+1$ : $j$};
+
+    \node [dots] (fromleft) [left=of current] {$\cdots$};
+    \node [dots] (fromabove) [above=of current] {$\cdots$};
+
+    \path (current) edge node [above] {$1 - p$} (losep);
+    \path (current) edge node [left] {$p$} (winp);
+\end{tikzpicture}
+    </pre>
+    <p class="caption">Figure: Simplified Markov chain fragment...</p>
+  </div>
+
+  <p>
+    We define \( P(i,j) \) as the probability that player A eventually wins the set given the current score \( i:j \).
+    The recursive relation is then:
+  </p>
+
+  $$
+  P(i,j) = p \cdot P(i+1,j) + (1-p) \cdot P(i,j+1)
+  $$
+
 
 <script>
   // Probability-of-upset function from ratingscentral.com
