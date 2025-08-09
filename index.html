@@ -13,17 +13,73 @@
     padding: 1rem;
     color: #333;
   }
-  h1 {
-    text-align: center;
-    margin-bottom: 2rem;
-    font-size: 2rem;
-  }
-    figure {
-        text-align: center;
-    }
-    img {
-        max-width: 100%;
-    }
+header {
+  padding: 1.2em;
+  text-align: center;
+}
+main {
+  margin: auto;
+  background: white;
+}
+
+nav {
+  background: #f0f0f0;
+  padding: 0.8em;
+  border-radius: 6px;
+  margin-bottom: 1.5em;
+}
+
+nav ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+nav li {
+  display: inline-block;
+  margin-right: 1em;
+}
+
+nav a {
+  text-decoration: none;
+  color: #004080;
+}
+
+h1, h2, h3 {
+  color: #004080;
+}
+
+.result-box {
+  border: 1px solid #ccc;
+  background: #fff8dc;
+  padding: 1em;
+  border-radius: 6px;
+  margin: 1.5em 0;
+}
+
+figure {
+  text-align: center;
+  margin: 1.5em 0;
+}
+
+figure img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+figure figcaption {
+  font-size: 0.9em;
+  color: #555;
+}
+
+footer {
+  margin-top: 2em;
+  font-size: 0.9em;
+  color: #555;
+  text-align: center;
+}
   table {
     width: 100%;
     border-collapse: collapse;
@@ -73,7 +129,12 @@
           src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
+<header>
   <h1>Table Tennis Optimal Handicap Points</h1>
+  <p><em>by Leonhard Kohl-Loerting, August 2025</em></p>
+</header>
+
+<main>
 
   <div style="overflow-x:auto;">
     <table id="handicapTable">
@@ -271,6 +332,12 @@ The probability that player A with playing strength \(r_A\) will upset player B 
 <p>
 Using the \(P_\text{point}\) values and dynamic programming, we can now find the optimal amount of handicap points to balance the match best, i.e. find the \(1 \leq h \leq 10\) for which \(P_\text{match}\) is closest to \(0.5\) when \(P_\text{set}\) is redefined as \(P(h,0)\).
 </p>
+</main>
+
+<footer>
+  © 2025 Leonhard Kohl-Loerting – View source on 
+  <a href="https://github.com/loerting/table-tennis-handicap" target="_blank">GitHub</a>
+</footer>
 
 <script>
   // Probability-of-upset function from ratingscentral.com
