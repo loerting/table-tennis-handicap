@@ -65,10 +65,6 @@
   </script>
   <script id="MathJax-script" async
           src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-
-  <!-- TikZJax -->
-<link rel="stylesheet" type="text/css" href="https://tikzjax.com/v1/fonts.css">
-<script src="https://tikzjax.com/v1/tikzjax.js"></script>
 </head>
 <body>
   <h1>Table Tennis Optimal Handicap Points</h1>
@@ -111,43 +107,164 @@
     <p><strong>Green values:</strong> Significant improvement in competitive balance (5%+ increase in win probability).</p>
   </div>
 
-  <h1>Probabilistic Model</h1>
+<h1>Probabilistic Model</h1>
 
-  <p>
-    Consider a match between two players, A and B. We assume a fixed point-winning probability \( p \) for player A. 
-    While this assumption simplifies the model, it is not entirely realistic, as in real-world scenarios the 
-    point-winning probability depends on who is serving and other external factors. The probability that 
-    player B wins a point is then \( 1 - p \).
-  </p>
+<p>
+Consider a match between two players, A and B. We assume a fixed point-winning probability \( p \) for player A. While this assumption simplifies the model, it is not entirely realistic, as in real-world scenarios the point-winning probability depends on who is serving and other external factors. The probability that player B wins a point is then \( 1 - p \).
+</p>
 
-  <div>
-    <script type="text/tikz">
-\begin{tikzpicture}[->, >=stealth', shorten >=2pt, node distance=1.2cm and 1.2cm, line width=0.5pt]
-    \tikzstyle{state} = [circle, draw, minimum size=1.3cm, inner sep=0pt, text centered]
-    \tikzstyle{dots} = [minimum size=1.3cm, inner sep=0pt, text centered]
+<figure>
+    <img src="chain1.svg" alt="Simplified Markov chain fragment of a table tennis set">
+    <figcaption><strong>Figure 1:</strong> Simplified Markov chain fragment of a table tennis set with score \(i : j\), where \(i\) are the points of player A and \(j\) the points of player B. \(p\) is the probability that player A wins a point. Each score depends only on two possible previous scores.</figcaption>
+</figure>
 
-    \node [state] (current) {$i$ : $j$};
-    \node [state] (losep) [right=of current] {$i$ : $j+1$};
-    \node [state] (winp) [below=of current] {$i+1$ : $j$};
+<p>
+A table tennis set can be modeled as a Markov chain (see Figure 1). If the current score is \( i:j \), the next point will result in a score of either \( (i+1):j \) with probability \( p \), or \( i:(j+1) \) with probability \( 1-p \). This means the next state depends only on the current state, satisfying the Markov property.
+</p>
 
-    \node [dots] (fromleft) [left=of current] {$\cdots$};
-    \node [dots] (fromabove) [above=of current] {$\cdots$};
+<p>
+We define \( P(i,j) \) as the probability that player A eventually wins the set given the current score \( i:j \). The recursive relation is then:
+</p>
 
-    \path (current) edge node [above] {$1 - p$} (losep);
-    \path (current) edge node [left] {$p$} (winp);
-\end{tikzpicture}
-    </script>
-  </div>
+\[
+    P(i,j) = p \cdot P(i+1,j) + (1-p) \cdot P(i,j+1).
+\]
 
-  <p>
-    We define \( P(i,j) \) as the probability that player A eventually wins the set given the current score \( i:j \).
-    The recursive relation is then:
-  </p>
+<p>
+The boundary conditions correspond to the winning criteria of a set. Player A wins the set by reaching 11 points with a lead of at least 2 points:
+</p>
 
-  $$
-  P(i,j) = p \cdot P(i+1,j) + (1-p) \cdot P(i,j+1)
-  $$
+\[
+    P(11,j) = 1 \quad \text{for all } j \leq 9,
+\]
+\[
+    P(i,11) = 0 \quad \text{for all } i \leq 9.
+\]
 
+<h2>Deuce situation</h2>
+
+<figure>
+    <img src="chain2.svg" alt="Markov chain model of a deuce situation">
+    <figcaption><strong>Figure 2:</strong> Markov chain model of a deuce situation. Starting from \(10:10\), the player with a two point advantage wins.</figcaption>
+</figure>
+
+<p>
+In a deuce situation \( l : l \), where \( l \geq 10 \), the player who gains a two-point advantage wins. This scenario can be modeled again using a Markov chain (see Figure 2). The probability that player A eventually wins from deuce satisfies
+</p>
+
+\[
+    P(\text{deuce}) = p^2 \cdot 1 + (1-p)^2 \cdot 0 + 2 \cdot p (1-p) \cdot P(\text{deuce}).
+\]
+
+<p>By rearranging, we can find a closed-form solution</p>
+
+\[
+\begin{aligned}
+    P(\text{deuce}) - 2p(1-p) \cdot P(\text{deuce}) &= p^2, \\
+    P(\text{deuce}) \left[ 1 - 2p(1-p) \right] &= p^2, \\
+    P(\text{deuce}) &= \frac{p^2}{1 - 2p(1-p)}.
+\end{aligned}
+\]
+
+<p>
+This yields the boundary condition
+</p>
+
+\[
+    P(10, 10) = \frac{p^2}{p^2 + (1-p)^2}.
+\]
+
+<p>
+Using dynamic programming we can solve for all \(P(i,j)\) quickly.
+</p>
+
+<h2>Closed-form set win probability</h2>
+<p>
+We can derive a closed-form solution by making use of the negative binomial distribution. 
+To achieve victory in a table tennis set, player A must reach 11 points with a minimum 2-point advantage. This can be accomplished through two mutually exclusive scenarios:
+</p>
+
+<ol>
+<li><strong>Direct victory</strong>: Player A reaches 11 points before player B accumulates 10 points</li>
+<li><strong>Deuce resolution</strong>: Both players reach 10 points, followed by player A winning the subsequent deuce situation</li>
+</ol>
+
+<p>
+Let \(W(n, k, p)\) denote the probability that player A wins exactly \(n\) points before player B wins \(k\) points, where each individual point is won by player A with probability \(p\).
+</p>
+
+<h3>Case 1: Direct victory</h3>
+<p>
+For player A to achieve a direct victory with final score \(11:j\) where \(j \leq 9\), player A must win exactly 11 points while player B wins exactly \(j\) points. The total number of points contested is \(11 + j\), with the constraint that player A must win the final point to secure the set.
+</p>
+
+\[
+P_{\text{direct}}(j) = \binom{10+j}{j} p^{10} (1-p)^j \cdot p.
+\]
+
+<p>
+Summing over all possible values of \(j\) for direct victory we get
+</p>
+
+\[
+P_{\text{direct}} = \sum_{j=0}^{9} \binom{10+j}{j} p^{11} (1-p)^j.
+\]
+
+<h3>Case 2: Victory through deuce resolution</h3>
+<p>
+Alternatively, player A may achieve victory by first reaching deuce score \(10:10\) and then winning two points. The probability of reaching a score of \(10:10\) is
+</p>
+
+\[
+\binom{20}{10} p^{10} (1-p)^{10}.
+\]
+
+<p>
+Combining this with our previously derived deuce win probability we get
+</p>
+
+\[
+P_{\text{deuce}} = \binom{20}{10} p^{10} (1-p)^{10} \cdot \frac{p^2}{p^2 + (1-p)^2}.
+\]
+
+<p>
+The total probability that player A wins the set from initial state \(0:0\) is the sum of the probabilities for both victory scenarios:
+</p>
+
+\[
+\boxed{
+P_{\text{set}} = \sum_{j=0}^{9} \binom{10+j}{j} p^{11} (1-p)^j
++ \binom{20}{10} p^{10} (1-p)^{10} \cdot \frac{p^2}{p^2 + (1-p)^2}
+}.
+\]
+
+<h2>Closed-form match win probability</h2>
+<p>
+Similarly to the point scores we can model set scores \(m : n\) again as a Markov chain (like in Figure 1) with transition probability \(P_\text{set}\). Let's assume \(s\) is the amount of sets needed to win the match (usually 2, 3 or 4). The probability that player A wins a match is
+</p>
+
+\[
+    \boxed{
+    P_{\text{match}} = \sum_{k=0}^{s-1} \binom{s-1 + k}{k} (P_{\text{set}})^s (1 - P_{\text{set}})^k
+    }.
+\]
+
+<h2>Calculation of Handicap Points</h2>
+<p>
+The <code>ratingscentral.com</code> rating system calculates rating scores for each player using Bayesian statistics. It internally defines a <em>probability-of-upset</em> function
+</p>
+
+\[
+    \pi(x) := \frac{1}{1 + e^{\frac{x}{67}}}.
+\]
+
+<p>
+The probability that player A with playing strength \(r_A\) will upset player B with playing strength \(r_B \geq r_A\) is \(\pi(r_B - r_A)\), which is equivalent to the match-win probability for player A \(P_\text{match}\). Given a playing strength difference \(x\) and sets required to win \(s\) we can now calculate the point-win probability \(p\) (\(P_\text{point}\)) for the weaker player.
+</p>
+
+<p>
+Using the \(P_\text{point}\) values and dynamic programming, we can now find the optimal amount of handicap points to balance the match best, i.e. find the \(1 \leq h \leq 10\) for which \(P_\text{match}\) is closest to \(0.5\) when \(P_\text{set}\) is redefined as \(P(h,0)\).
+</p>
 
 <script>
   // Probability-of-upset function from ratingscentral.com
