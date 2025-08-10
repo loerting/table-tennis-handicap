@@ -8,7 +8,7 @@
   body {
     font-family: system-ui, sans-serif;
     background: #fff;
-    max-width: 900px;
+    max-width: 1200px;
     margin: 2rem auto;
     padding: 1rem;
     color: #333;
@@ -96,6 +96,7 @@ footer {
   tbody tr:nth-child(even) {
     background: #fafafa;
   }
+.text-yellow-600 { color: #d69e2e; }
   .text-green-600 {
     color: #16a34a;
   }
@@ -130,37 +131,44 @@ footer {
 </head>
 <body>
 <header>
-  <h1>Table Tennis Optimal Handicap Points</h1>
+  <h1>The Optimal Amount of Table Tennis Handicap Points</h1>
   <p><em>by Leonhard Kohl-Loerting, August 2025</em></p>
 </header>
 
 <main>
+<h1>Handicap Table for NewTTRS (RC)</h1>
+
+<p>
+All probabilities shown in the table are for the weaker player (lower rated player).
+</p>
 
   <div style="overflow-x:auto;">
     <table id="handicapTable">
       <thead>
         <tr>
-          <th rowspan="2">Rating<br>Difference</th>
-          <th colspan="5">2 Sets Win</th>
-          <th colspan="5">3 Sets Win</th>
-          <th colspan="5">4 Sets Win</th>
+          <th rowspan="2">Rating<br>Difference<br>(RC)</th>
+          <th colspan="5">Best of 3 (2 sets to win)</th>
+          <th colspan="5">Best of 5 (3 sets to win)</th>
+          <th colspan="5">Best of 7 (4 sets to win)</th>
         </tr>
         <tr>
-          <th>Point<br>Win %</th>
-          <th>Set<br>Win %</th>
-          <th>Match<br>Win %</th>
+          <th>\( P_{\text{point}} \)</th>
+          <th>\( P_{\text{set}} \)</th>
+          <th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
           <th>Best<br>Handicap</th>
-          <th>Final<br>Win %</th>
-          <th>Point<br>Win %</th>
-          <th>Set<br>Win %</th>
-          <th>Match<br>Win %</th>
+          <th>Adjusted<br>\( P_{\text{match}} \)</th>
+
+          <th>\( P_{\text{point}} \)</th>
+          <th>\( P_{\text{set}} \)</th>
+          <th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
           <th>Best<br>Handicap</th>
-          <th>Final<br>Win %</th>
-          <th>Point<br>Win %</th>
-          <th>Set<br>Win %</th>
-          <th>Match<br>Win %</th>
+          <th>Adjusted<br>\( P_{\text{match}} \)</th>
+
+          <th>\( P_{\text{point}} \)</th>
+          <th>\( P_{\text{set}} \)</th>
+          <th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
           <th>Best<br>Handicap</th>
-          <th>Final<br>Win %</th>
+          <th>Adjusted<br>\( P_{\text{match}} \)</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -168,9 +176,12 @@ footer {
   </div>
 
   <div class="notes">
-    <p><strong>Note:</strong> All probabilities shown are for the weaker player (lower rated player).</p>
+    <p><strong>Rating Difference:</strong> The rating difference between the stronger and the weaker player.</p>
+    <p><strong>\( P_{\text{point}} \):</strong> Weaker player's point win probability.</p>
+    <p><strong>\( P_{\text{set}} \):</strong> Weaker player's set win probability.</p>
+    <p><strong>\( P_{\text{match}} \):</strong> Weaker player's match win probability (set to \( \pi(x) \)).</p>
     <p><strong>Best Handicap:</strong> Number of points the weaker player starts with in each set (0 means no handicap needed).</p>
-    <p><strong>Final Win:</strong> Weaker player's match win probability after applying the optimal handicap.</p>
+    <p><strong>Adjusted \( P_{\text{match}} \):</strong> Weaker player's match win probability after applying the optimal handicap.</p>
   </div>
 
 <h1>Probabilistic Model</h1>
@@ -217,7 +228,6 @@ The boundary conditions correspond to the winning criteria of a set. Player A wi
 <p>
 In a deuce situation \( l : l \), where \( l \geq 10 \), the player who gains a two-point advantage wins. This scenario can be modeled again using a Markov chain (see Figure 2). The probability that player A eventually wins from deuce satisfies
 </p>
-
 \[
     P(\text{deuce}) = p^2 \cdot 1 + (1-p)^2 \cdot 0 + 2 \cdot p (1-p) \cdot P(\text{deuce}).
 \]
@@ -316,8 +326,9 @@ Similarly to the point scores we can model set scores \(m : n\) again as a Marko
 \]
 
 <h2>Calculation of Handicap Points</h2>
+<h3>NewTTRS (RC)</h3>
 <p>
-The <code>ratingscentral.com</code> rating system calculates rating scores for each player using Bayesian statistics. It internally defines a <em>probability-of-upset</em> function
+The NewTTRS rating system<sup><a href="#fn1" id="ref1">1</a></sup> used in Austria and Australia (<a href="https://www.ratingscentral.com/HowItWorks.php">ratingscentral</a>) calculates rating scores for each player using Bayesian statistics. It internally defines a <em>probability-of-upset</em> function
 </p>
 
 \[
@@ -325,12 +336,42 @@ The <code>ratingscentral.com</code> rating system calculates rating scores for e
 \]
 
 <p>
-The probability that player A with playing strength \(r_A\) will upset player B with playing strength \(r_B \geq r_A\) is \(\pi(r_B - r_A)\), which is equivalent to the match-win probability for player A \(P_\text{match}\). Given a playing strength difference \(x\) and sets required to win \(s\) we can now calculate the point-win probability \(p\) (\(P_\text{point}\)) for the weaker player.
+The probability that player A with playing strength \(r_A\) will upset player B with playing strength \(r_B \geq r_A\) is \(\pi(r_B - r_A)\), which is equivalent to the match-win probability for player A \(P_\text{match}\). 
+Note that NewTTRS does not differentiate between best of 3, 5 or 7 matches.
+Given a playing strength difference \(x\) and sets required to win \(s\) we can now calculate the point-win probability \(p\) (\(P_\text{point}\)) for the weaker player.
 </p>
 
 <p>
 Using the \(P_\text{point}\) values and dynamic programming, we can now find the optimal amount of handicap points to balance the match best, i.e. find the \(1 \leq h \leq 10\) for which \(P_\text{match}\) is closest to \(0.5\) when \(P_\text{set}\) is redefined as \(P(h,0)\).
 </p>
+
+<h3>TTR System</h3>
+<p>
+Similarly to the NewTTRS, Germany uses the TTR system<sup><a href="#fn2" id="ref2">2</a></sup> which defines the match win probability as
+</p>
+
+\[
+    P_\text{match} := \frac{1}{1 + 10^{\frac{\text{TTR}_B - \text{TTR}_A}{150}}}.
+\]
+
+<p>
+We can again compute the table for the similar formula.
+</p>
+
+
+
+<hr>
+<ol>
+  <li id="fn1">
+    Marcus, David J. (2001) New Table-Tennis Rating System. 
+    <i>Journal of the Royal Statistical Society: Series D (The Statistician)</i>, 50: 191–208. 
+    doi: <a href="https://doi.org/10.1111/1467-9884.00271">10.1111/1467-9884.00271</a> 
+    <a href="#ref1">↩</a>
+  </li>
+  <li id="fn2">
+    Beschreibung der andro-Rangliste (PDF). Retrieved from <a href="https://www.mytischtennis.de/public/imagedata/20240515-Beschreibung-der-andro-Rangliste.pdf">myTischtennis.de</a> on 10.08.2025. <a href="#ref2">↩</a>
+  </li>
+</ol>
 </main>
 
 <footer>
@@ -464,12 +505,12 @@ Using the \(P_\text{point}\) values and dynamic programming, we can now find the
   // On page load, generate and fill the table
   function generateResults() {
     const tbody = document.querySelector('#handicapTable tbody');
-    for (let ratingDiff = 0; ratingDiff <= 1000; ratingDiff += 50) {
+    for (let ratingDiff = 0; ratingDiff <= 1250;) {
       const tr = document.createElement('tr');
       if ((ratingDiff / 50) % 2 === 1) tr.style.backgroundColor = '#fafafa';
 
       const tdRating = document.createElement('td');
-      tdRating.textContent = ratingDiff;
+      tdRating.textContent = ratingDiff == 1250 ? "1250+" : ratingDiff;
       tdRating.style.fontWeight = '600';
       tdRating.style.padding = '4px 6px';
       tr.appendChild(tdRating);
@@ -480,8 +521,7 @@ Using the \(P_\text{point}\) values and dynamic programming, we can now find the
         const setWinProb = calculateSetWinProb(pointWinProb);
         const { handicap: optimalHandicap, finalMatchProb } = calculateOptimalHandicap(ratingDiff, setsToWin);
 
-        const improvement = finalMatchProb > targetMatchProb + 0.05;
-        const improvementClass = improvement ? 'text-green-600' : '';
+        const improvementClass = finalMatchProb == 0.5 ? '' : (finalMatchProb >= 0.5 ? 'text-green-600' : 'text-yellow-600');
         const handicapClass = optimalHandicap > 0 ? 'text-blue-600' : 'text-gray-400';
 
         const createCell = (text, className) => {
@@ -499,6 +539,8 @@ Using the \(P_\text{point}\) values and dynamic programming, we can now find the
       });
 
       tbody.appendChild(tr);
+
+      ratingDiff += ratingDiff < 100 ? 25 : 50;
     }
   }
 
