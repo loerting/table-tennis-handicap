@@ -134,6 +134,20 @@
 		color: #555;
 	}
 
+	.table-selector {
+		margin-bottom: 2rem;
+		text-align: center;
+	}
+
+	.table-selector label {
+		margin: 0 1rem;
+		font-weight: bold;
+	}
+
+	.table-selector input[type="radio"] {
+		margin-right: 0.5rem;
+	}
+
 	.system-selector {
 		margin-bottom: 2rem;
 		text-align: center;
@@ -184,78 +198,118 @@
 	<main>
 		<h1>Handicap Tables</h1>
 		<p> All probabilities shown in the table are for the weaker player (lower rated player). Scroll down for more information on the computation. </p>
-		<div class="system-selector">
+		
+		<div class="table-selector">
 			<label>
-				<input type="radio" name="system" value="newttrs" checked> NewTTRS (RC) - Austria/Australia </label>
+				<input type="radio" name="table-type" value="probability" checked> Probability Tables
+			</label>
 			<label>
-				<input type="radio" name="system" value="ttr"> TTR - Germany </label>
+				<input type="radio" name="table-type" value="range"> Rating Range Tables
+			</label>
 		</div>
-		<div id="newttrs-table" class="table-container">
-			<h2>NewTTRS (RC) Rating System</h2>
+
+		<div id="probability-tables" class="table-group">
+			<div class="system-selector">
+				<label>
+					<input type="radio" name="system" value="newttrs" checked> NewTTRS (RC) - Austria/Australia </label>
+				<label>
+					<input type="radio" name="system" value="ttr"> TTR - Germany </label>
+			</div>
+			<div id="newttrs-table" class="table-container">
+				<h2>NewTTRS (RC) Rating System</h2>
+				<div style="overflow-x:auto;">
+					<table id="handicapTableNewTTRS">
+						<thead>
+							<tr>
+								<th rowspan="2">Rating<br>Difference<br>(NewTTRS / RC)</th>
+								<th colspan="5">Best of 3 (2 sets to win)</th>
+								<th colspan="5">Best of 5 (3 sets to win)</th>
+								<th colspan="5">Best of 7 (4 sets to win)</th>
+							</tr>
+							<tr>
+								<th>\( P_{\text{point}} \)</th>
+								<th>\( P_{\text{set}} \)</th>
+								<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
+								<th>Best<br>Handicap</th>
+								<th>Adjusted<br>\( P_{\text{match}} \)</th>
+								<th>\( P_{\text{point}} \)</th>
+								<th>\( P_{\text{set}} \)</th>
+								<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
+								<th>Best<br>Handicap</th>
+								<th>Adjusted<br>\( P_{\text{match}} \)</th>
+								<th>\( P_{\text{point}} \)</th>
+								<th>\( P_{\text{set}} \)</th>
+								<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
+								<th>Best<br>Handicap</th>
+								<th>Adjusted<br>\( P_{\text{match}} \)</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+			<div id="ttr-table" class="table-container hidden">
+				<h2>TTR Rating System</h2>
+				<div style="overflow-x:auto;">
+					<table id="handicapTableTTR">
+						<thead>
+							<tr>
+								<th rowspan="2">Rating<br>Difference<br>(TTR)</th>
+								<th colspan="5">Best of 3 (2 sets to win)</th>
+								<th colspan="5">Best of 5 (3 sets to win)</th>
+								<th colspan="5">Best of 7 (4 sets to win)</th>
+							</tr>
+							<tr>
+								<th>\( P_{\text{point}} \)</th>
+								<th>\( P_{\text{set}} \)</th>
+								<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
+								<th>Best<br>Handicap</th>
+								<th>Adjusted<br>\( P_{\text{match}} \)</th>
+								<th>\( P_{\text{point}} \)</th>
+								<th>\( P_{\text{set}} \)</th>
+								<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
+								<th>Best<br>Handicap</th>
+								<th>Adjusted<br>\( P_{\text{match}} \)</th>
+								<th>\( P_{\text{point}} \)</th>
+								<th>\( P_{\text{set}} \)</th>
+								<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
+								<th>Best<br>Handicap</th>
+								<th>Adjusted<br>\( P_{\text{match}} \)</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div id="range-tables" class="table-group hidden">
+			<h2>Rating Difference Ranges for Handicap Points</h2>
+			<div class="system-selector">
+				<label>
+					<input type="radio" name="range-format" value="bo3" checked> Best of 3
+				</label>
+				<label>
+					<input type="radio" name="range-format" value="bo5"> Best of 5
+				</label>
+				<label>
+					<input type="radio" name="range-format" value="bo7"> Best of 7
+				</label>
+			</div>
 			<div style="overflow-x:auto;">
-				<table id="handicapTableNewTTRS">
+				<table id="rangeTable">
 					<thead>
 						<tr>
-							<th rowspan="2">Rating<br>Difference<br>(NewTTRS / RC)</th>
-							<th colspan="5">Best of 3 (2 sets to win)</th>
-							<th colspan="5">Best of 5 (3 sets to win)</th>
-							<th colspan="5">Best of 7 (4 sets to win)</th>
-						</tr>
-						<tr>
-							<th>\( P_{\text{point}} \)</th>
-							<th>\( P_{\text{set}} \)</th>
-							<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
-							<th>Best<br>Handicap</th>
-							<th>Adjusted<br>\( P_{\text{match}} \)</th>
-							<th>\( P_{\text{point}} \)</th>
-							<th>\( P_{\text{set}} \)</th>
-							<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
-							<th>Best<br>Handicap</th>
-							<th>Adjusted<br>\( P_{\text{match}} \)</th>
-							<th>\( P_{\text{point}} \)</th>
-							<th>\( P_{\text{set}} \)</th>
-							<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
-							<th>Best<br>Handicap</th>
-							<th>Adjusted<br>\( P_{\text{match}} \)</th>
+							<th>Handicap<br>Points</th>
+							<th>Rating Difference Range<br>(NewTTRS / RC)</th>
+							<th>Rating Difference Range<br>(TTR)</th>
 						</tr>
 					</thead>
 					<tbody></tbody>
 				</table>
 			</div>
 		</div>
-		<div id="ttr-table" class="table-container hidden">
-			<h2>TTR Rating System</h2>
-			<div style="overflow-x:auto;">
-				<table id="handicapTableTTR">
-					<thead>
-						<tr>
-							<th rowspan="2">Rating<br>Difference<br>(TTR)</th>
-							<th colspan="5">Best of 3 (2 sets to win)</th>
-							<th colspan="5">Best of 5 (3 sets to win)</th>
-							<th colspan="5">Best of 7 (4 sets to win)</th>
-						</tr>
-						<tr>
-							<th>\( P_{\text{point}} \)</th>
-							<th>\( P_{\text{set}} \)</th>
-							<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
-							<th>Best<br>Handicap</th>
-							<th>Adjusted<br>\( P_{\text{match}} \)</th>
-							<th>\( P_{\text{point}} \)</th>
-							<th>\( P_{\text{set}} \)</th>
-							<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
-							<th>Best<br>Handicap</th>
-							<th>Adjusted<br>\( P_{\text{match}} \)</th>
-							<th>\( P_{\text{point}} \)</th>
-							<th>\( P_{\text{set}} \)</th>
-							<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
-							<th>Best<br>Handicap</th>
-							<th>Adjusted<br>\( P_{\text{match}} \)</th>
-						</tr>
-					</thead>
-					<tbody></tbody>
-				</table>
-			</div>
-		</div>
+
 		<div class="notes">
 			<p><strong>Rating Difference:</strong> The rating difference between the stronger and the weaker player.</p>
 			<p><strong>\( P_{\text{point}} \):</strong> Weaker player's point win probability.</p>
@@ -420,6 +474,88 @@
 			finalMatchProb: bestMatchProb
 		};
 	}
+	
+	// Calculate rating ranges for each handicap point
+	function calculateRatingRanges(setsToWin) {
+		const ranges = {
+			newttrs: Array(11).fill(null).map(() => ({ min: null, max: null })),
+			ttr: Array(11).fill(null).map(() => ({ min: null, max: null }))
+		};
+
+		// Calculate handicap for each rating difference from 0 to 1250
+		for(let ratingDiff = 0; ratingDiff <= 1250; ratingDiff++) {
+			// NewTTRS
+			const newttrsHandicap = calculateOptimalHandicap(ratingDiff, setsToWin, piNewTTRS).handicap;
+			if(ranges.newttrs[newttrsHandicap].min === null) {
+				ranges.newttrs[newttrsHandicap].min = ratingDiff;
+			}
+			ranges.newttrs[newttrsHandicap].max = ratingDiff;
+
+			// TTR
+			const ttrHandicap = calculateOptimalHandicap(ratingDiff, setsToWin, piTTR).handicap;
+			if(ranges.ttr[ttrHandicap].min === null) {
+				ranges.ttr[ttrHandicap].min = ratingDiff;
+			}
+			ranges.ttr[ttrHandicap].max = ratingDiff;
+		}
+
+		return ranges;
+	}
+
+	// Generate range table for a specific match format
+	function generateRangeTable(setsToWin) {
+		const tbody = document.querySelector('#rangeTable tbody');
+		tbody.innerHTML = '';
+
+		const ranges = calculateRatingRanges(setsToWin);
+
+		for(let handicap = 0; handicap <= 10; handicap++) {
+			const tr = document.createElement('tr');
+			if(handicap % 2 === 1) tr.style.backgroundColor = '#fafafa';
+
+			// Handicap Points column
+			const tdHandicap = document.createElement('td');
+			tdHandicap.textContent = handicap;
+			tdHandicap.style.fontWeight = '600';
+			tdHandicap.className = handicap > 0 ? 'text-blue-600' : 'text-gray-400';
+			tr.appendChild(tdHandicap);
+
+			// NewTTRS Range column
+			const tdNewTTRS = document.createElement('td');
+			const newttrsRange = ranges.newttrs[handicap];
+			if(newttrsRange.min !== null && newttrsRange.max !== null) {
+				if(newttrsRange.min === newttrsRange.max) {
+					tdNewTTRS.textContent = newttrsRange.min.toString();
+				} else if(newttrsRange.max === 1250) {
+					tdNewTTRS.textContent = `${newttrsRange.min} - 1250+`;
+				} else {
+					tdNewTTRS.textContent = `${newttrsRange.min} - ${newttrsRange.max}`;
+				}
+			} else {
+				tdNewTTRS.textContent = '-';
+			}
+			tr.appendChild(tdNewTTRS);
+
+			// TTR Range column
+			const tdTTR = document.createElement('td');
+			const ttrRange = ranges.ttr[handicap];
+			if(ttrRange.min !== null && ttrRange.max !== null) {
+				if(ttrRange.min === ttrRange.max) {
+					tdTTR.textContent = ttrRange.min.toString();
+				} else if(ttrRange.max === 1250) {
+					tdTTR.textContent = `${ttrRange.min} - 1250+`;
+				} else {
+					tdTTR.textContent = `${ttrRange.min} - ${ttrRange.max}`;
+				}
+			} else {
+				tdTTR.textContent = '-';
+			}
+			tr.appendChild(tdTTR);
+
+			tbody.appendChild(tr);
+		}
+	}
+
 	// Generate table for a specific rating system
 	function generateTable(system, piFunction, tableId, maxRating) {
 		const tbody = document.querySelector(`#${tableId} tbody`);
@@ -458,6 +594,31 @@
 			ratingDiff += ratingDiff < 100 ? 25 : 50;
 		}
 	}
+	
+	// Handle table type selection
+	function handleTableTypeChange() {
+		const selectedTableType = document.querySelector('input[name="table-type"]:checked').value;
+		document.querySelectorAll('.table-group').forEach(group => {
+			group.classList.add('hidden');
+		});
+		if(selectedTableType === 'probability') {
+			document.getElementById('probability-tables').classList.remove('hidden');
+		} else {
+			document.getElementById('range-tables').classList.remove('hidden');
+			// Generate range table for current format
+			const selectedFormat = document.querySelector('input[name="range-format"]:checked').value;
+			const setsToWin = selectedFormat === 'bo3' ? 2 : (selectedFormat === 'bo5' ? 3 : 4);
+			generateRangeTable(setsToWin);
+		}
+	}
+	
+	// Handle range format selection
+	function handleRangeFormatChange() {
+		const selectedFormat = document.querySelector('input[name="range-format"]:checked').value;
+		const setsToWin = selectedFormat === 'bo3' ? 2 : (selectedFormat === 'bo5' ? 3 : 4);
+		generateRangeTable(setsToWin);
+	}
+	
 	// Handle system selection
 	function handleSystemChange() {
 		const selectedSystem = document.querySelector('input[name="system"]:checked').value;
@@ -466,16 +627,25 @@
 		});
 		document.getElementById(`${selectedSystem}-table`).classList.remove('hidden');
 	}
+	
 	// Generate results for both systems
 	function generateResults() {
 		generateTable('newttrs', piNewTTRS, 'handicapTableNewTTRS', 1250);
 		generateTable('ttr', piTTR, 'handicapTableTTR', 1250);
+		generateRangeTable(2); // Default to Best of 3
 	}
+	
 	window.onload = function() {
 		generateResults();
 		// Add event listeners for radio buttons
 		document.querySelectorAll('input[name="system"]').forEach(radio => {
 			radio.addEventListener('change', handleSystemChange);
+		});
+		document.querySelectorAll('input[name="table-type"]').forEach(radio => {
+			radio.addEventListener('change', handleTableTypeChange);
+		});
+		document.querySelectorAll('input[name="range-format"]').forEach(radio => {
+			radio.addEventListener('change', handleRangeFormatChange);
 		});
 	};
 	</script>
