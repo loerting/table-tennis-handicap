@@ -1,551 +1,484 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Table Tennis Optimal Handicap Points</title>
-<style>
-  body {
-    font-family: system-ui, sans-serif;
-    background: #fff;
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 1rem;
-    color: #333;
-  }
-header {
-  padding: 1.2em;
-  text-align: center;
-}
-main {
-  margin: auto;
-  background: white;
-}
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Table Tennis Optimal Handicap Points</title>
+	<style>
+	body {
+		font-family: system-ui, sans-serif;
+		background: #fff;
+		max-width: 1400px;
+		margin: 2rem auto;
+		padding: 1rem;
+		color: #333;
+	}
 
-nav {
-  background: #f0f0f0;
-  padding: 0.8em;
-  border-radius: 6px;
-  margin-bottom: 1.5em;
-}
+	header {
+		padding: 1.2em;
+		text-align: center;
+	}
 
-nav ul {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-}
+	main {
+		margin: auto;
+		background: white;
+	}
 
-nav li {
-  display: inline-block;
-  margin-right: 1em;
-}
+	nav {
+		background: #f0f0f0;
+		padding: 0.8em;
+		border-radius: 6px;
+		margin-bottom: 1.5em;
+	}
 
-nav a {
-  text-decoration: none;
-  color: #004080;
-}
+	nav ul {
+		list-style: none;
+		padding-left: 0;
+		margin: 0;
+	}
 
-h1, h2, h3 {
-  color: #004080;
-}
+	nav li {
+		display: inline-block;
+		margin-right: 1em;
+	}
 
-.result-box {
-  border: 1px solid #ccc;
-  background: #fff8dc;
-  padding: 1em;
-  border-radius: 6px;
-  margin: 1.5em 0;
-}
+	nav a {
+		text-decoration: none;
+		color: #004080;
+	}
 
-figure {
-  text-align: center;
-  margin: 1.5em 0;
-}
+	h1,
+	h2,
+	h3 {
+		color: #004080;
+	}
 
-figure img {
-  max-width: 100%;
-  height: auto;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
+	.result-box {
+		border: 1px solid #ccc;
+		background: #fff8dc;
+		padding: 1em;
+		border-radius: 6px;
+		margin: 1.5em 0;
+	}
 
-figure figcaption {
-  font-size: 0.9em;
-  color: #555;
-}
+	figure {
+		text-align: center;
+		margin: 1.5em 0;
+	}
 
-footer {
-  margin-top: 2em;
-  font-size: 0.9em;
-  color: #555;
-  text-align: center;
-}
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-  }
-  th, td {
-    border: 1px solid #ccc;
-    padding: 4px 6px;
-    text-align: center;
-  }
-  th {
-    background: #f0f0f0;
-  }
-  tbody tr:nth-child(even) {
-    background: #fafafa;
-  }
-.text-yellow-600 { color: #d69e2e; }
-  .text-green-600 {
-    color: #16a34a;
-  }
-  .text-blue-600 {
-    color: #2563eb;
-  }
-  .text-gray-400 {
-    color: #9ca3af;
-  }
-  .font-bold {
-    font-weight: 700;
-  }
-  .notes {
-    margin-top: 1.5rem;
-    font-size: 11px;
-    color: #555;
-  }
-</style>
-  <!-- MathJax -->
-  <script>
-    MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$','$$'], ['\\[','\\]']],
-        packages: {'[+]': ['ams']}
-      },
-      svg: {fontCache: 'global'}
-    };
-  </script>
-  <script id="MathJax-script" async
-          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+	figure img {
+		max-width: 100%;
+		height: auto;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+	}
+
+	figure figcaption {
+		font-size: 0.9em;
+		color: #555;
+	}
+
+	footer {
+		margin-top: 2em;
+		font-size: 0.9em;
+		color: #555;
+		text-align: center;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 12px;
+		margin-bottom: 2rem;
+	}
+
+	th,
+	td {
+		border: 1px solid #ccc;
+		padding: 4px 6px;
+		text-align: center;
+	}
+
+	th {
+		background: #f0f0f0;
+	}
+
+	tbody tr:nth-child(even) {
+		background: #fafafa;
+	}
+
+	.text-yellow-600 {
+		color: #d69e2e;
+	}
+
+	.text-green-600 {
+		color: #16a34a;
+	}
+
+	.text-blue-600 {
+		color: #2563eb;
+	}
+
+	.text-gray-400 {
+		color: #9ca3af;
+	}
+
+	.font-bold {
+		font-weight: 700;
+	}
+
+	.notes {
+		margin-top: 1.5rem;
+		font-size: 11px;
+		color: #555;
+	}
+
+	.system-selector {
+		margin-bottom: 2rem;
+		text-align: center;
+	}
+
+	.system-selector label {
+		margin: 0 1rem;
+		font-weight: bold;
+	}
+
+	.system-selector input[type="radio"] {
+		margin-right: 0.5rem;
+	}
+
+	.hidden {
+		display: none;
+	}
+	</style>
+	<!-- MathJax -->
+	<script>
+	MathJax = {
+		tex: {
+			inlineMath: [
+				['$', '$'],
+				['\\(', '\\)']
+			],
+			displayMath: [
+				['$$', '$$'],
+				['\\[', '\\]']
+			],
+			packages: {
+				'[+]': ['ams']
+			}
+		},
+		svg: {
+			fontCache: 'global'
+		}
+	};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
+
 <body>
-<header>
-  <h1>The Optimal Amount of Table Tennis Handicap Points</h1>
-  <p><em>by Leonhard Kohl-Loerting, August 2025</em></p>
-</header>
-
-<main>
-<h1>Handicap Table for NewTTRS (RC)</h1>
-
-<p>
-All probabilities shown in the table are for the weaker player (lower rated player).
-</p>
-
-  <div style="overflow-x:auto;">
-    <table id="handicapTable">
-      <thead>
-        <tr>
-          <th rowspan="2">Rating<br>Difference<br>(RC)</th>
-          <th colspan="5">Best of 3 (2 sets to win)</th>
-          <th colspan="5">Best of 5 (3 sets to win)</th>
-          <th colspan="5">Best of 7 (4 sets to win)</th>
-        </tr>
-        <tr>
-          <th>\( P_{\text{point}} \)</th>
-          <th>\( P_{\text{set}} \)</th>
-          <th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
-          <th>Best<br>Handicap</th>
-          <th>Adjusted<br>\( P_{\text{match}} \)</th>
-
-          <th>\( P_{\text{point}} \)</th>
-          <th>\( P_{\text{set}} \)</th>
-          <th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
-          <th>Best<br>Handicap</th>
-          <th>Adjusted<br>\( P_{\text{match}} \)</th>
-
-          <th>\( P_{\text{point}} \)</th>
-          <th>\( P_{\text{set}} \)</th>
-          <th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
-          <th>Best<br>Handicap</th>
-          <th>Adjusted<br>\( P_{\text{match}} \)</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <div class="notes">
-    <p><strong>Rating Difference:</strong> The rating difference between the stronger and the weaker player.</p>
-    <p><strong>\( P_{\text{point}} \):</strong> Weaker player's point win probability.</p>
-    <p><strong>\( P_{\text{set}} \):</strong> Weaker player's set win probability.</p>
-    <p><strong>\( P_{\text{match}} \):</strong> Weaker player's match win probability (set to \( \pi(x) \)).</p>
-    <p><strong>Best Handicap:</strong> Number of points the weaker player starts with in each set (0 means no handicap needed).</p>
-    <p><strong>Adjusted \( P_{\text{match}} \):</strong> Weaker player's match win probability after applying the optimal handicap.</p>
-  </div>
-
-<h1>Probabilistic Model</h1>
-
-<p>
-Consider a match between two players, A and B. We assume a fixed point-winning probability \( p \) for player A. While this assumption simplifies the model, it is not entirely realistic, as in real-world scenarios the point-winning probability depends on who is serving and other external factors. The probability that player B wins a point is then \( 1 - p \).
-</p>
-
-<figure>
-    <img src="chain1.svg" alt="Simplified Markov chain fragment of a table tennis set">
-    <figcaption><strong>Figure 1:</strong> Simplified Markov chain fragment of a table tennis set with score \(i : j\), where \(i\) are the points of player A and \(j\) the points of player B. \(p\) is the probability that player A wins a point. Each score depends only on two possible previous scores.</figcaption>
-</figure>
-
-<p>
-A table tennis set can be modeled as a Markov chain (see Figure 1). If the current score is \( i:j \), the next point will result in a score of either \( (i+1):j \) with probability \( p \), or \( i:(j+1) \) with probability \( 1-p \). This means the next state depends only on the current state, satisfying the Markov property.
-</p>
-
-<p>
-We define \( P(i,j) \) as the probability that player A eventually wins the set given the current score \( i:j \). The recursive relation is then:
-</p>
-
-\[
-    P(i,j) = p \cdot P(i+1,j) + (1-p) \cdot P(i,j+1).
-\]
-
-<p>
-The boundary conditions correspond to the winning criteria of a set. Player A wins the set by reaching 11 points with a lead of at least 2 points:
-</p>
-
-\[
-    P(11,j) = 1 \quad \text{for all } j \leq 9,
-\]
-\[
-    P(i,11) = 0 \quad \text{for all } i \leq 9.
-\]
-
-<h2>Deuce situation</h2>
-
-<figure>
-    <img src="chain2.svg" alt="Markov chain model of a deuce situation">
-    <figcaption><strong>Figure 2:</strong> Markov chain model of a deuce situation. Starting from \(10:10\), the player with a two point advantage wins.</figcaption>
-</figure>
-
-<p>
-In a deuce situation \( l : l \), where \( l \geq 10 \), the player who gains a two-point advantage wins. This scenario can be modeled again using a Markov chain (see Figure 2). The probability that player A eventually wins from deuce satisfies
-</p>
-\[
-    P(\text{deuce}) = p^2 \cdot 1 + (1-p)^2 \cdot 0 + 2 \cdot p (1-p) \cdot P(\text{deuce}).
-\]
-
-<p>By rearranging, we can find a closed-form solution</p>
-
-\[
-\begin{aligned}
-    P(\text{deuce}) - 2p(1-p) \cdot P(\text{deuce}) &= p^2, \\
-    P(\text{deuce}) \left[ 1 - 2p(1-p) \right] &= p^2, \\
-    P(\text{deuce}) &= \frac{p^2}{1 - 2p(1-p)}.
-\end{aligned}
-\]
-
-<p>
-This yields the boundary condition
-</p>
-
-\[
-    P(10, 10) = \frac{p^2}{p^2 + (1-p)^2}.
-\]
-
-<p>
-Using dynamic programming we can solve for all \(P(i,j)\) quickly.
-</p>
-
-<h2>Closed-form set win probability</h2>
-<p>
-We can derive a closed-form solution by making use of the negative binomial distribution. 
-To achieve victory in a table tennis set, player A must reach 11 points with a minimum 2-point advantage. This can be accomplished through two mutually exclusive scenarios:
-</p>
-
-<ol>
-<li><strong>Direct victory</strong>: Player A reaches 11 points before player B accumulates 10 points</li>
-<li><strong>Deuce resolution</strong>: Both players reach 10 points, followed by player A winning the subsequent deuce situation</li>
-</ol>
-
-<p>
-Let \(W(n, k, p)\) denote the probability that player A wins exactly \(n\) points before player B wins \(k\) points, where each individual point is won by player A with probability \(p\).
-</p>
-
-<h3>Case 1: Direct victory</h3>
-<p>
-For player A to achieve a direct victory with final score \(11:j\) where \(j \leq 9\), player A must win exactly 11 points while player B wins exactly \(j\) points. The total number of points contested is \(11 + j\), with the constraint that player A must win the final point to secure the set.
-</p>
-
-\[
-P_{\text{direct}}(j) = \binom{10+j}{j} p^{10} (1-p)^j \cdot p.
-\]
-
-<p>
-Summing over all possible values of \(j\) for direct victory we get
-</p>
-
-\[
-P_{\text{direct}} = \sum_{j=0}^{9} \binom{10+j}{j} p^{11} (1-p)^j.
-\]
-
-<h3>Case 2: Victory through deuce resolution</h3>
-<p>
-Alternatively, player A may achieve victory by first reaching deuce score \(10:10\) and then winning two points. The probability of reaching a score of \(10:10\) is
-</p>
-
-\[
-\binom{20}{10} p^{10} (1-p)^{10}.
-\]
-
-<p>
-Combining this with our previously derived deuce win probability we get
-</p>
-
-\[
-P_{\text{deuce}} = \binom{20}{10} p^{10} (1-p)^{10} \cdot \frac{p^2}{p^2 + (1-p)^2}.
-\]
-
-<p>
-The total probability that player A wins the set from initial state \(0:0\) is the sum of the probabilities for both victory scenarios:
-</p>
-
-\[
-\boxed{
-P_{\text{set}} = \sum_{j=0}^{9} \binom{10+j}{j} p^{11} (1-p)^j
-+ \binom{20}{10} p^{10} (1-p)^{10} \cdot \frac{p^2}{p^2 + (1-p)^2}
-}.
-\]
-
-<h2>Closed-form match win probability</h2>
-<p>
-Similarly to the point scores we can model set scores \(m : n\) again as a Markov chain (like in Figure 1) with transition probability \(P_\text{set}\). Let's assume \(s\) is the amount of sets needed to win the match (usually 2, 3 or 4). The probability that player A wins a match is
-</p>
-
-\[
-    \boxed{
-    P_{\text{match}} = \sum_{k=0}^{s-1} \binom{s-1 + k}{k} (P_{\text{set}})^s (1 - P_{\text{set}})^k
-    }.
-\]
-
-<h2>Calculation of Handicap Points</h2>
-<h3>NewTTRS (RC)</h3>
-<p>
-The NewTTRS rating system<sup><a href="#fn1" id="ref1">1</a></sup> used in Austria and Australia (<a href="https://www.ratingscentral.com/HowItWorks.php">ratingscentral</a>) calculates rating scores for each player using Bayesian statistics. It internally defines a <em>probability-of-upset</em> function
-</p>
-
-\[
-    \pi(x) := \frac{1}{1 + e^{\frac{x}{67}}}.
-\]
-
-<p>
-The probability that player A with playing strength \(r_A\) will upset player B with playing strength \(r_B \geq r_A\) is \(\pi(r_B - r_A)\), which is equivalent to the match-win probability for player A \(P_\text{match}\). 
-Note that NewTTRS does not differentiate between best of 3, 5 or 7 matches.
-Given a playing strength difference \(x\) and sets required to win \(s\) we can now calculate the point-win probability \(p\) (\(P_\text{point}\)) for the weaker player.
-</p>
-
-<p>
-Using the \(P_\text{point}\) values and dynamic programming, we can now find the optimal amount of handicap points to balance the match best, i.e. find the \(1 \leq h \leq 10\) for which \(P_\text{match}\) is closest to \(0.5\) when \(P_\text{set}\) is redefined as \(P(h,0)\).
-</p>
-
-<h3>TTR System</h3>
-<p>
-Similarly to the NewTTRS, Germany uses the TTR system<sup><a href="#fn2" id="ref2">2</a></sup> which defines the match win probability as
-</p>
-
-\[
-    P_\text{match} := \frac{1}{1 + 10^{\frac{\text{TTR}_B - \text{TTR}_A}{150}}}.
-\]
-
-<p>
-We can again compute the table for the similar formula.
-</p>
-
-
-
-<hr>
-<ol>
-  <li id="fn1">
-    Marcus, David J. (2001) New Table-Tennis Rating System. 
-    <i>Journal of the Royal Statistical Society: Series D (The Statistician)</i>, 50: 191–208. 
-    doi: <a href="https://doi.org/10.1111/1467-9884.00271">10.1111/1467-9884.00271</a> 
-    <a href="#ref1">↩</a>
-  </li>
-  <li id="fn2">
-    Beschreibung der andro-Rangliste (PDF). Retrieved from <a href="https://www.mytischtennis.de/public/imagedata/20240515-Beschreibung-der-andro-Rangliste.pdf">myTischtennis.de</a> on 10.08.2025. <a href="#ref2">↩</a>
-  </li>
-</ol>
-</main>
-
-<footer>
-  © 2025 Leonhard Kohl-Loerting – View source on 
-  <a href="https://github.com/loerting/table-tennis-handicap" target="_blank">GitHub</a>
-</footer>
-
-<script>
-  // Probability-of-upset function from ratingscentral.com
-  function pi(x) {
-    return 1 / (1 + Math.exp(x / 67));
-  }
-
-  // Binomial coefficient calculation
-  function binomial(n, k) {
-    if (k > n || k < 0) return 0;
-    if (k === 0 || k === n) return 1;
-    
-    let result = 1;
-    for (let i = 1; i <= k; i++) {
-      result = result * (n - i + 1) / i;
-    }
-    return result;
-  }
-
-  // Calculate set win probability given point-win probability (closed form)
-  function calculateSetWinProb(p) {
-    let directProb = 0;
-    for (let j = 0; j <= 9; j++) {
-      directProb += binomial(10 + j, j) * Math.pow(p, 11) * Math.pow(1 - p, j);
-    }
-    const reachDeuce = binomial(20, 10) * Math.pow(p, 10) * Math.pow(1 - p, 10);
-    const winDeuce = (p * p) / (p * p + (1 - p) * (1 - p));
-    const deuceProb = reachDeuce * winDeuce;
-    return directProb + deuceProb;
-  }
-
-  // Calculate match win probability given set-win probability
-  function calculateMatchWinProb(setWinProb, setsToWin) {
-    let matchWinProb = 0;
-    for (let k = 0; k < setsToWin; k++) {
-      const binomCoeff = binomial(setsToWin - 1 + k, k);
-      matchWinProb += binomCoeff * Math.pow(setWinProb, setsToWin) * Math.pow(1 - setWinProb, k);
-    }
-    return matchWinProb;
-  }
-
-  // Calculate point-win probability from match-win probability using binary search
-  function calculatePointWinProb(targetMatchProb, setsToWin) {
-    let low = 0.001, high = 0.999;
-    const tolerance = 1e-8;
-    
-    for (let iter = 0; iter < 100; iter++) {
-      const mid = (low + high) / 2;
-      const setProb = calculateSetWinProb(mid);
-      const matchProb = calculateMatchWinProb(setProb, setsToWin);
-      
-      if (Math.abs(matchProb - targetMatchProb) < tolerance) {
-        return mid;
-      }
-      
-      if (matchProb < targetMatchProb) {
-        low = mid;
-      } else {
-        high = mid;
-      }
-    }
-    return (low + high) / 2;
-  }
-
-  // Dynamic programming to calculate P(i,j) with proper boundary conditions
-  function calculateProbabilities(p) {
-    const P = Array(22).fill(null).map(() => Array(22).fill(0));
-    
-    for (let j = 0; j <= 9; j++) {
-      P[11][j] = 1;
-    }
-    for (let i = 0; i <= 9; i++) {
-      P[i][11] = 0;
-    }
-    for (let i = 10; i <= 20; i++) {
-      for (let j = 10; j <= 20; j++) {
-        if (i >= j + 2) P[i][j] = 1;
-        else if (j >= i + 2) P[i][j] = 0;
-      }
-    }
-    P[10][10] = (p * p) / (p * p + (1 - p) * (1 - p));
-    
-    for (let sum = 19; sum >= 0; sum--) {
-      for (let i = 0; i <= Math.min(10, sum); i++) {
-        const j = sum - i;
-        if (j >= 0 && j <= 10 && (i < 10 || j < 10)) {
-          P[i][j] = p * P[i + 1][j] + (1 - p) * P[i][j + 1];
-        }
-      }
-    }
-    return P;
-  }
-
-  // Calculate set win probability with handicap
-  function calculateSetWinProbWithHandicap(p, handicap) {
-    const P = calculateProbabilities(p);
-    return P[handicap][0];
-  }
-
-  // Calculate optimal handicap for given rating difference and sets to win
-  function calculateOptimalHandicap(ratingDiff, setsToWin) {
-    if (ratingDiff === 0) return { handicap: 0, finalMatchProb: 0.5 };
-    
-    const targetMatchProb = pi(ratingDiff);
-    const pointWinProb = calculatePointWinProb(targetMatchProb, setsToWin);
-    
-    let bestHandicap = 0;
-    let bestMatchProb = targetMatchProb;
-    let bestDiff = Math.abs(targetMatchProb - 0.5);
-    
-    for (let h = 0; h <= 10; h++) {
-      const setWinProbWithHandicap = calculateSetWinProbWithHandicap(pointWinProb, h);
-      const matchWinProbWithHandicap = calculateMatchWinProb(setWinProbWithHandicap, setsToWin);
-      
-      const diff = Math.abs(matchWinProbWithHandicap - 0.5);
-      if (diff < bestDiff) {
-        bestDiff = diff;
-        bestHandicap = h;
-        bestMatchProb = matchWinProbWithHandicap;
-      }
-    }
-    return { handicap: bestHandicap, finalMatchProb: bestMatchProb };
-  }
-
-  // On page load, generate and fill the table
-  function generateResults() {
-    const tbody = document.querySelector('#handicapTable tbody');
-    for (let ratingDiff = 0; ratingDiff <= 1250;) {
-      const tr = document.createElement('tr');
-      if ((ratingDiff / 50) % 2 === 1) tr.style.backgroundColor = '#fafafa';
-
-      const tdRating = document.createElement('td');
-      tdRating.textContent = ratingDiff == 1250 ? "1250+" : ratingDiff;
-      tdRating.style.fontWeight = '600';
-      tdRating.style.padding = '4px 6px';
-      tr.appendChild(tdRating);
-
-      [2, 3, 4].forEach(setsToWin => {
-        const targetMatchProb = pi(ratingDiff);
-        const pointWinProb = ratingDiff === 0 ? 0.5 : calculatePointWinProb(targetMatchProb, setsToWin);
-        const setWinProb = calculateSetWinProb(pointWinProb);
-        const { handicap: optimalHandicap, finalMatchProb } = calculateOptimalHandicap(ratingDiff, setsToWin);
-
-        const improvementClass = finalMatchProb == 0.5 ? '' : (finalMatchProb >= 0.5 ? 'text-green-600' : 'text-yellow-600');
-        const handicapClass = optimalHandicap > 0 ? 'text-blue-600' : 'text-gray-400';
-
-        const createCell = (text, className) => {
-          const td = document.createElement('td');
-          td.textContent = text;
-          if (className) td.className = className;
-          return td;
-        };
-
-        tr.appendChild(createCell((pointWinProb * 100).toFixed(1) + '%'));
-        tr.appendChild(createCell((setWinProb * 100).toFixed(1) + '%'));
-        tr.appendChild(createCell((targetMatchProb * 100).toFixed(1) + '%'));
-        tr.appendChild(createCell(optimalHandicap, 'font-bold ' + handicapClass));
-        tr.appendChild(createCell((finalMatchProb * 100).toFixed(1) + '%', 'font-bold ' + improvementClass));
-      });
-
-      tbody.appendChild(tr);
-
-      ratingDiff += ratingDiff < 100 ? 25 : 50;
-    }
-  }
-
-  window.onload = generateResults;
-</script>
-
+	<header>
+		<h1>The Optimal Amount of Table Tennis Handicap Points</h1>
+		<p><em>by Leonhard Kohl-Loerting, August 2025</em></p>
+	</header>
+	<main>
+		<h1>Handicap Tables</h1>
+		<p> All probabilities shown in the table are for the weaker player (lower rated player). Scroll down for more information on the computation. </p>
+		<div class="system-selector">
+			<label>
+				<input type="radio" name="system" value="newttrs" checked> NewTTRS (RC) - Austria/Australia </label>
+			<label>
+				<input type="radio" name="system" value="ttr"> TTR - Germany </label>
+		</div>
+		<div id="newttrs-table" class="table-container">
+			<h2>NewTTRS (RC) Rating System</h2>
+			<div style="overflow-x:auto;">
+				<table id="handicapTableNewTTRS">
+					<thead>
+						<tr>
+							<th rowspan="2">Rating<br>Difference<br>(NewTTRS / RC)</th>
+							<th colspan="5">Best of 3 (2 sets to win)</th>
+							<th colspan="5">Best of 5 (3 sets to win)</th>
+							<th colspan="5">Best of 7 (4 sets to win)</th>
+						</tr>
+						<tr>
+							<th>\( P_{\text{point}} \)</th>
+							<th>\( P_{\text{set}} \)</th>
+							<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
+							<th>Best<br>Handicap</th>
+							<th>Adjusted<br>\( P_{\text{match}} \)</th>
+							<th>\( P_{\text{point}} \)</th>
+							<th>\( P_{\text{set}} \)</th>
+							<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
+							<th>Best<br>Handicap</th>
+							<th>Adjusted<br>\( P_{\text{match}} \)</th>
+							<th>\( P_{\text{point}} \)</th>
+							<th>\( P_{\text{set}} \)</th>
+							<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
+							<th>Best<br>Handicap</th>
+							<th>Adjusted<br>\( P_{\text{match}} \)</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div>
+		</div>
+		<div id="ttr-table" class="table-container hidden">
+			<h2>TTR Rating System</h2>
+			<div style="overflow-x:auto;">
+				<table id="handicapTableTTR">
+					<thead>
+						<tr>
+							<th rowspan="2">Rating<br>Difference<br>(TTR)</th>
+							<th colspan="5">Best of 3 (2 sets to win)</th>
+							<th colspan="5">Best of 5 (3 sets to win)</th>
+							<th colspan="5">Best of 7 (4 sets to win)</th>
+						</tr>
+						<tr>
+							<th>\( P_{\text{point}} \)</th>
+							<th>\( P_{\text{set}} \)</th>
+							<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
+							<th>Best<br>Handicap</th>
+							<th>Adjusted<br>\( P_{\text{match}} \)</th>
+							<th>\( P_{\text{point}} \)</th>
+							<th>\( P_{\text{set}} \)</th>
+							<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
+							<th>Best<br>Handicap</th>
+							<th>Adjusted<br>\( P_{\text{match}} \)</th>
+							<th>\( P_{\text{point}} \)</th>
+							<th>\( P_{\text{set}} \)</th>
+							<th>\( P_{\text{match}} \)<br>\( = \pi(x) \)</th>
+							<th>Best<br>Handicap</th>
+							<th>Adjusted<br>\( P_{\text{match}} \)</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div>
+		</div>
+		<div class="notes">
+			<p><strong>Rating Difference:</strong> The rating difference between the stronger and the weaker player.</p>
+			<p><strong>\( P_{\text{point}} \):</strong> Weaker player's point win probability.</p>
+			<p><strong>\( P_{\text{set}} \):</strong> Weaker player's set win probability.</p>
+			<p><strong>\( P_{\text{match}} \):</strong> Weaker player's match win probability (set to \( \pi(x) \)).</p>
+			<p><strong>Best Handicap:</strong> Number of points the weaker player starts with in each set (0 means no handicap needed).</p>
+			<p><strong>Adjusted \( P_{\text{match}} \):</strong> Weaker player's match win probability after applying the optimal handicap.</p>
+		</div>
+		<h1>Probabilistic Model</h1>
+		<p> Consider a match between two players, A and B. We assume a fixed point-winning probability \( p \) for player A. While this assumption simplifies the model, it is not entirely realistic, as in real-world scenarios the point-winning probability depends on who is serving and other external factors. The probability that player B wins a point is then \( 1 - p \). </p>
+		<figure>
+			<img src="chain1.svg" alt="Simplified Markov chain fragment of a table tennis set">
+			<figcaption><strong>Figure 1:</strong> Simplified Markov chain fragment of a table tennis set with score \(i : j\), where \(i\) are the points of player A and \(j\) the points of player B. \(p\) is the probability that player A wins a point. Each score depends only on two possible previous scores.</figcaption>
+		</figure>
+		<p> A table tennis set can be modeled as a Markov chain (see Figure 1). If the current score is \( i:j \), the next point will result in a score of either \( (i+1):j \) with probability \( p \), or \( i:(j+1) \) with probability \( 1-p \). This means the next state depends only on the current state, satisfying the Markov property. </p>
+		<p> We define \( P(i,j) \) as the probability that player A eventually wins the set given the current score \( i:j \). The recursive relation is then: </p> \[ P(i,j) = p \cdot P(i+1,j) + (1-p) \cdot P(i,j+1). \] <p> The boundary conditions correspond to the winning criteria of a set. Player A wins the set by reaching 11 points with a lead of at least 2 points: </p> \[ P(11,j) = 1 \quad \text{for all } j \leq 9, \] \[ P(i,11) = 0 \quad \text{for all } i \leq 9. \] <h2>Deuce situation</h2>
+		<figure>
+			<img src="chain2.svg" alt="Markov chain model of a deuce situation">
+			<figcaption><strong>Figure 2:</strong> Markov chain model of a deuce situation. Starting from \(10:10\), the player with a two point advantage wins.</figcaption>
+		</figure>
+		<p> In a deuce situation \( l : l \), where \( l \geq 10 \), the player who gains a two-point advantage wins. This scenario can be modeled again using a Markov chain (see Figure 2). The probability that player A eventually wins from deuce satisfies </p> \[ P(\text{deuce}) = p^2 \cdot 1 + (1-p)^2 \cdot 0 + 2 \cdot p (1-p) \cdot P(\text{deuce}). \] <p>By rearranging, we can find a closed-form solution</p> \[ \begin{aligned} P(\text{deuce}) - 2p(1-p) \cdot P(\text{deuce}) &= p^2, \\ P(\text{deuce}) \left[ 1 - 2p(1-p) \right] &= p^2, \\ P(\text{deuce}) &= \frac{p^2}{1 - 2p(1-p)}. \end{aligned} \] <p> This yields the boundary condition </p> \[ P(10, 10) = \frac{p^2}{p^2 + (1-p)^2}. \] <p> Using dynamic programming we can solve for all \(P(i,j)\) quickly. </p>
+		<h2>Closed-form set win probability</h2>
+		<p> We can derive a closed-form solution by making use of the negative binomial distribution. To achieve victory in a table tennis set, player A must reach 11 points with a minimum 2-point advantage. This can be accomplished through two mutually exclusive scenarios: </p>
+		<ol>
+			<li><strong>Direct victory</strong>: Player A reaches 11 points before player B accumulates 10 points</li>
+			<li><strong>Deuce resolution</strong>: Both players reach 10 points, followed by player A winning the subsequent deuce situation</li>
+		</ol>
+		<p> Let \(W(n, k, p)\) denote the probability that player A wins exactly \(n\) points before player B wins \(k\) points, where each individual point is won by player A with probability \(p\). </p>
+		<h3>Case 1: Direct victory</h3>
+		<p> For player A to achieve a direct victory with final score \(11:j\) where \(j \leq 9\), player A must win exactly 11 points while player B wins exactly \(j\) points. The total number of points contested is \(11 + j\), with the constraint that player A must win the final point to secure the set. </p> \[ P_{\text{direct}}(j) = \binom{10+j}{j} p^{10} (1-p)^j \cdot p. \] <p> Summing over all possible values of \(j\) for direct victory we get </p> \[ P_{\text{direct}} = \sum_{j=0}^{9} \binom{10+j}{j} p^{11} (1-p)^j. \] <h3>Case 2: Victory through deuce resolution</h3>
+		<p> Alternatively, player A may achieve victory by first reaching deuce score \(10:10\) and then winning two points. The probability of reaching a score of \(10:10\) is </p> \[ \binom{20}{10} p^{10} (1-p)^{10}. \] <p> Combining this with our previously derived deuce win probability we get </p> \[ P_{\text{deuce}} = \binom{20}{10} p^{10} (1-p)^{10} \cdot \frac{p^2}{p^2 + (1-p)^2}. \] <p> The total probability that player A wins the set from initial state \(0:0\) is the sum of the probabilities for both victory scenarios: </p> \[ \boxed{ P_{\text{set}} = \sum_{j=0}^{9} \binom{10+j}{j} p^{11} (1-p)^j + \binom{20}{10} p^{10} (1-p)^{10} \cdot \frac{p^2}{p^2 + (1-p)^2} }. \] <h2>Closed-form match win probability</h2>
+		<p> Similarly to the point scores we can model set scores \(m : n\) again as a Markov chain (like in Figure 1) with transition probability \(P_\text{set}\). Let's assume \(s\) is the amount of sets needed to win the match (usually 2, 3 or 4). The probability that player A wins a match is </p> \[ \boxed{ P_{\text{match}} = \sum_{k=0}^{s-1} \binom{s-1 + k}{k} (P_{\text{set}})^s (1 - P_{\text{set}})^k }. \] <h2>Calculation of Handicap Points</h2>
+		<h3>NewTTRS (RC)</h3>
+		<p> The NewTTRS rating system<sup><a href="#fn1" id="ref1">1</a></sup> used in Austria and Australia (<a href="https://www.ratingscentral.com/HowItWorks.php">ratingscentral</a>) calculates rating scores for each player using Bayesian statistics. It internally defines a <em>probability-of-upset</em> function </p> \[ \pi(x) := \frac{1}{1 + e^{\frac{x}{67}}}. \] <p> The probability that player A with playing strength \(r_A\) will upset player B with playing strength \(r_B \geq r_A\) is \(\pi(r_B - r_A)\), which is equivalent to the match-win probability for player A \(P_\text{match}\). Note that NewTTRS does not differentiate between best of 3, 5 or 7 matches. Given a playing strength difference \(x\) and sets required to win \(s\) we can now calculate the point-win probability \(p\) (\(P_\text{point}\)) for the weaker player. </p>
+		<p> Using the \(P_\text{point}\) values and dynamic programming, we can now find the optimal amount of handicap points to balance the match best, i.e. find the \(1 \leq h \leq 10\) for which \(P_\text{match}\) is closest to \(0.5\) when \(P_\text{set}\) is redefined as \(P(h,0)\). </p>
+		<h3>TTR System</h3>
+		<p>Germany uses the TTR system<sup><a href="#fn2" id="ref2">2</a></sup> which is quite similar to NewTTRS, and defines the match win probability as </p> \[ \pi(x) := \frac{1}{1 + 10^{\frac{x}{150}}}, \] <p> where \(x = \text{TTR}_B - \text{TTR}_A\). We can again compute the table for the similar formula. </p>
+		<hr>
+		<ol>
+			<li id="fn1"> Marcus, David J. (2001) New Table-Tennis Rating System. <i>Journal of the Royal Statistical Society: Series D (The Statistician)</i>, 50: 191–208. doi: <a href="https://doi.org/10.1111/1467-9884.00271">10.1111/1467-9884.00271</a>
+				<a href="#ref1">↩</a>
+			</li>
+			<li id="fn2"> Beschreibung der andro-Rangliste (PDF). Retrieved from <a href="https://www.mytischtennis.de/public/imagedata/20240515-Beschreibung-der-andro-Rangliste.pdf">myTischtennis.de</a> on 10.08.2025. <a href="#ref2">↩</a>
+			</li>
+		</ol>
+	</main>
+	<footer> © 2025 Leonhard Kohl-Loerting – View source on <a href="https://github.com/loerting/table-tennis-handicap" target="_blank">GitHub</a>
+	</footer>
+	<script>
+	// Probability-of-upset functions
+	function piNewTTRS(x) {
+		return 1 / (1 + Math.exp(x / 67));
+	}
+
+	function piTTR(x) {
+		return 1 / (1 + Math.pow(10, x / 150));
+	}
+	// Binomial coefficient calculation
+	function binomial(n, k) {
+		if(k > n || k < 0) return 0;
+		if(k === 0 || k === n) return 1;
+		let result = 1;
+		for(let i = 1; i <= k; i++) {
+			result = result * (n - i + 1) / i;
+		}
+		return result;
+	}
+	// Calculate set win probability given point-win probability (closed form)
+	function calculateSetWinProb(p) {
+		let directProb = 0;
+		for(let j = 0; j <= 9; j++) {
+			directProb += binomial(10 + j, j) * Math.pow(p, 11) * Math.pow(1 - p, j);
+		}
+		const reachDeuce = binomial(20, 10) * Math.pow(p, 10) * Math.pow(1 - p, 10);
+		const winDeuce = (p * p) / (p * p + (1 - p) * (1 - p));
+		const deuceProb = reachDeuce * winDeuce;
+		return directProb + deuceProb;
+	}
+	// Calculate match win probability given set-win probability
+	function calculateMatchWinProb(setWinProb, setsToWin) {
+		let matchWinProb = 0;
+		for(let k = 0; k < setsToWin; k++) {
+			const binomCoeff = binomial(setsToWin - 1 + k, k);
+			matchWinProb += binomCoeff * Math.pow(setWinProb, setsToWin) * Math.pow(1 - setWinProb, k);
+		}
+		return matchWinProb;
+	}
+	// Calculate point-win probability from match-win probability using binary search
+	function calculatePointWinProb(targetMatchProb, setsToWin) {
+		let low = 0.001,
+			high = 0.999;
+		const tolerance = 1e-8;
+		for(let iter = 0; iter < 100; iter++) {
+			const mid = (low + high) / 2;
+			const setProb = calculateSetWinProb(mid);
+			const matchProb = calculateMatchWinProb(setProb, setsToWin);
+			if(Math.abs(matchProb - targetMatchProb) < tolerance) {
+				return mid;
+			}
+			if(matchProb < targetMatchProb) {
+				low = mid;
+			} else {
+				high = mid;
+			}
+		}
+		return (low + high) / 2;
+	}
+	// Dynamic programming to calculate P(i,j) with proper boundary conditions
+	function calculateProbabilities(p) {
+		const P = Array(22).fill(null).map(() => Array(22).fill(0));
+		for(let j = 0; j <= 9; j++) {
+			P[11][j] = 1;
+		}
+		for(let i = 0; i <= 9; i++) {
+			P[i][11] = 0;
+		}
+		for(let i = 10; i <= 20; i++) {
+			for(let j = 10; j <= 20; j++) {
+				if(i >= j + 2) P[i][j] = 1;
+				else if(j >= i + 2) P[i][j] = 0;
+			}
+		}
+		P[10][10] = (p * p) / (p * p + (1 - p) * (1 - p));
+		for(let sum = 19; sum >= 0; sum--) {
+			for(let i = 0; i <= Math.min(10, sum); i++) {
+				const j = sum - i;
+				if(j >= 0 && j <= 10 && (i < 10 || j < 10)) {
+					P[i][j] = p * P[i + 1][j] + (1 - p) * P[i][j + 1];
+				}
+			}
+		}
+		return P;
+	}
+	// Calculate set win probability with handicap
+	function calculateSetWinProbWithHandicap(p, handicap) {
+		const P = calculateProbabilities(p);
+		return P[handicap][0];
+	}
+	// Calculate optimal handicap for given rating difference and sets to win
+	function calculateOptimalHandicap(ratingDiff, setsToWin, piFunction) {
+		if(ratingDiff === 0) return {
+			handicap: 0,
+			finalMatchProb: 0.5
+		};
+		const targetMatchProb = piFunction(ratingDiff);
+		const pointWinProb = calculatePointWinProb(targetMatchProb, setsToWin);
+		let bestHandicap = 0;
+		let bestMatchProb = targetMatchProb;
+		let bestDiff = Math.abs(targetMatchProb - 0.5);
+		for(let h = 0; h <= 10; h++) {
+			const setWinProbWithHandicap = calculateSetWinProbWithHandicap(pointWinProb, h);
+			const matchWinProbWithHandicap = calculateMatchWinProb(setWinProbWithHandicap, setsToWin);
+			const diff = Math.abs(matchWinProbWithHandicap - 0.5);
+			if(diff < bestDiff) {
+				bestDiff = diff;
+				bestHandicap = h;
+				bestMatchProb = matchWinProbWithHandicap;
+			}
+		}
+		return {
+			handicap: bestHandicap,
+			finalMatchProb: bestMatchProb
+		};
+	}
+	// Generate table for a specific rating system
+	function generateTable(system, piFunction, tableId, maxRating) {
+		const tbody = document.querySelector(`#${tableId} tbody`);
+		tbody.innerHTML = ''; // Clear existing content
+		for(let ratingDiff = 0; ratingDiff <= maxRating;) {
+			const tr = document.createElement('tr');
+			if((ratingDiff / (ratingDiff < 100 ? 25 : 50)) % 2 === 1) tr.style.backgroundColor = '#fafafa';
+			const tdRating = document.createElement('td');
+			tdRating.textContent = ratingDiff == maxRating ? `${maxRating}+` : ratingDiff;
+			tdRating.style.fontWeight = '600';
+			tdRating.style.padding = '4px 6px';
+			tr.appendChild(tdRating);
+			[2, 3, 4].forEach(setsToWin => {
+				const targetMatchProb = piFunction(ratingDiff);
+				const pointWinProb = ratingDiff === 0 ? 0.5 : calculatePointWinProb(targetMatchProb, setsToWin);
+				const setWinProb = calculateSetWinProb(pointWinProb);
+				const {
+					handicap: optimalHandicap,
+					finalMatchProb
+				} = calculateOptimalHandicap(ratingDiff, setsToWin, piFunction);
+				const improvementClass = finalMatchProb == 0.5 ? '' : (finalMatchProb >= 0.5 ? 'text-green-600' : 'text-yellow-600');
+				const handicapClass = optimalHandicap > 0 ? 'text-blue-600' : 'text-gray-400';
+				const createCell = (text, className) => {
+					const td = document.createElement('td');
+					td.textContent = text;
+					if(className) td.className = className;
+					return td;
+				};
+				tr.appendChild(createCell((pointWinProb * 100).toFixed(1) + '%'));
+				tr.appendChild(createCell((setWinProb * 100).toFixed(1) + '%'));
+				tr.appendChild(createCell((targetMatchProb * 100).toFixed(1) + '%'));
+				tr.appendChild(createCell(optimalHandicap, 'font-bold ' + handicapClass));
+				tr.appendChild(createCell((finalMatchProb * 100).toFixed(1) + '%', 'font-bold ' + improvementClass));
+			});
+			tbody.appendChild(tr);
+			ratingDiff += ratingDiff < 100 ? 25 : 50;
+		}
+	}
+	// Handle system selection
+	function handleSystemChange() {
+		const selectedSystem = document.querySelector('input[name="system"]:checked').value;
+		document.querySelectorAll('.table-container').forEach(container => {
+			container.classList.add('hidden');
+		});
+		document.getElementById(`${selectedSystem}-table`).classList.remove('hidden');
+	}
+	// Generate results for both systems
+	function generateResults() {
+		generateTable('newttrs', piNewTTRS, 'handicapTableNewTTRS', 1250);
+		generateTable('ttr', piTTR, 'handicapTableTTR', 1250);
+	}
+	window.onload = function() {
+		generateResults();
+		// Add event listeners for radio buttons
+		document.querySelectorAll('input[name="system"]').forEach(radio => {
+			radio.addEventListener('change', handleSystemChange);
+		});
+	};
+	</script>
 </body>
+
 </html>
