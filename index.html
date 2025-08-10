@@ -401,8 +401,8 @@
 	function calculatePointWinProb(targetMatchProb, setsToWin) {
 		let low = 0.001,
 			high = 0.999;
-		const tolerance = 1e-8;
-		for(let iter = 0; iter < 100; iter++) {
+		const tolerance = 1e-14;
+		for(let iter = 0; iter < 200; iter++) {
 			const mid = (low + high) / 2;
 			const setProb = calculateSetWinProb(mid);
 			const matchProb = calculateMatchWinProb(setProb, setsToWin);
