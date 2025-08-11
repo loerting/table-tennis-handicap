@@ -120,6 +120,10 @@
 		color: #2563eb;
 	}
 
+	.text-red-600 {
+		color: #dc2626;
+	}
+
 	.text-gray-400 {
 		color: #9ca3af;
 	}
@@ -242,6 +246,7 @@
 				<select id="ratingSystem">
 					<option value="newttrs">NewTTRS (RC) - Austria/Australia</option>
 					<option value="ttr">TTR - Germany</option>
+					<option value="usatt">USATT - United States</option>
 				</select>
 			</div>
 			<button class="calculate-btn" onclick="calculateHandicap()">Calculate Handicap</button>
@@ -256,11 +261,12 @@
 				<thead>
 					<tr>
 						<th rowspan="2">Handicap<br>Points</th>
-						<th colspan="2">Rating Difference Range</th>
+						<th colspan="3">Rating Difference Range</th>
 					</tr>
 					<tr>
 						<th>NewTTRS / RC</th>
 						<th>TTR</th>
+						<th>USATT</th>
 					</tr>
 				</thead>
 				<tbody></tbody>
@@ -305,12 +311,25 @@
 		<p> Using the \(P_\text{point}\) values and dynamic programming, we can now find the optimal amount of handicap points to balance the match best, i.e. find the \(1 \leq h \leq 10\) for which \(P_\text{match}\) is closest to \(0.5\) when \(P_\text{set}\) is redefined as \(P(h,0)\). </p>
 		<h3>TTR System</h3>
 		<p>Germany uses the TTR system<sup><a href="#fn2" id="ref2">2</a></sup> which is quite similar to NewTTRS, and defines the match win probability as </p> \[ \pi(x) := \frac{1}{1 + 10^{\frac{x}{150}}}, \] <p> where \(x = \text{TTR}_B - \text{TTR}_A\). We can again compute the table for the similar formula. </p>
+		<h3>USATT System</h3>
+		<p>The United States Association of Table Tennis (USATT) uses a discrete point exchange table rather than a continuous probability function<sup><a href="#fn3" id="ref3">3</a></sup>. Unlike other rating systems that explicitly define win probability functions, USATT's approach is based on point exchanges that implicitly encode win probabilities through an equilibrium assumption.</p>
+		<p>The USATT point exchange system awards points to the winner and deducts points from the loser based on the rating difference between players. When a higher-rated player wins as expected, they gain fewer points, while an upset victory by the lower-rated player yields more points. The system assumes that at equilibrium, the expected point change for any player should be zero over many games.</p>
+		<p>Using this equilibrium condition, we can derive the implicit win probabilities. For a given rating difference range with expected win points \(E\) and upset win points \(U\), if the win probability is \(p\), then</p>
+		\[ p \cdot (-E) + (1-p) \cdot U = 0. \]
+		<p>Solving for \(p\) yields.</p>
+		\[ p = \frac{U}{E + U}. \]
+		<p>By fitting a logistic curve to these derived probabilities, we estimate the implicit probability function</p>
+		\[ \pi(x) \approx \frac{1}{1 + e^{\alpha x}}, \]
+		<p>where \(\alpha \approx 0.0173\) for the USATT system.</p>
+		<p>It is important to note that this probability function is not officially defined by USATT but rather inferred from their point exchange table through mathematical analysis. The actual USATT system uses discrete rating ranges and may not perfectly follow this continuous approximation, especially at the boundaries between rating difference ranges.</p>
 		<hr>
 		<ol>
 			<li id="fn1"> Marcus, David J. (2001) New Table-Tennis Rating System. <i>Journal of the Royal Statistical Society: Series D (The Statistician)</i>, 50: 191–208. doi: <a href="https://doi.org/10.1111/1467-9884.00271">10.1111/1467-9884.00271</a>
 				<a href="#ref1">↩</a>
 			</li>
 			<li id="fn2"> Beschreibung der andro-Rangliste (PDF). Retrieved from <a href="https://www.mytischtennis.de/public/imagedata/20240515-Beschreibung-der-andro-Rangliste.pdf">myTischtennis.de</a> on 10.08.2025. <a href="#ref2">↩</a>
+			</li>
+			<li id="fn3"> USA Table Tennis Rating System. <i>Official Tournament Guide</i>. Retrieved from <a href="https://usatt.simplycompete.com/info/ratings">usatt.simplycompete.com/info/ratings</a> on 11.08.2025. <a href="#ref3">↩</a>
 			</li>
 		</ol>
 	</main>
@@ -325,6 +344,11 @@
 	function piTTR(x) {
 		return 1 / (1 + Math.pow(10, x / 150));
 	}
+
+	function piUSATT(x) {
+		return 1 / (1 + Math.exp(0.0173 * x));
+	}
+
 	// Binomial coefficient calculation
 	function binomial(n, k) {
 		if(k > n || k < 0) return 0;
@@ -440,7 +464,8 @@
 	function calculateRatingRanges(setsToWin) {
 		const ranges = {
 			newttrs: Array(11).fill(null).map(() => ({ min: null, max: null })),
-			ttr: Array(11).fill(null).map(() => ({ min: null, max: null }))
+			ttr: Array(11).fill(null).map(() => ({ min: null, max: null })),
+			usatt: Array(11).fill(null).map(() => ({ min: null, max: null }))
 		};
 
 		// Calculate handicap for each rating difference from 0 to 3000
@@ -458,6 +483,13 @@
 				ranges.ttr[ttrHandicap].min = ratingDiff;
 			}
 			ranges.ttr[ttrHandicap].max = ratingDiff;
+
+			// USATT
+			const usattHandicap = calculateOptimalHandicap(ratingDiff, setsToWin, piUSATT).handicap;
+			if(ranges.usatt[usattHandicap].min === null) {
+				ranges.usatt[usattHandicap].min = ratingDiff;
+			}
+			ranges.usatt[usattHandicap].max = ratingDiff;
 		}
 
 		return ranges;
@@ -513,6 +545,22 @@
 			}
 			tr.appendChild(tdTTR);
 
+			// USATT Range column
+			const tdUSATT = document.createElement('td');
+			const usattRange = ranges.usatt[handicap];
+			if(usattRange.min !== null && usattRange.max !== null) {
+				if(usattRange.min === usattRange.max) {
+					tdUSATT.textContent = usattRange.min.toString();
+				} else if(usattRange.max === 3000) {
+					tdUSATT.textContent = `${usattRange.min} - 3000+`;
+				} else {
+					tdUSATT.textContent = `${usattRange.min} - ${usattRange.max}`;
+				}
+			} else {
+				tdUSATT.textContent = '-';
+			}
+			tr.appendChild(tdUSATT);
+
 			tbody.appendChild(tr);
 		}
 	}
@@ -531,17 +579,29 @@
 		}
 		
 		const ratingDiff = Math.abs(player1Rating - player2Rating);
-		const piFunction = system === 'newttrs' ? piNewTTRS : piTTR;
+		let piFunction, systemName;
+		
+		switch(system) {
+			case 'newttrs':
+				piFunction = piNewTTRS;
+				systemName = 'NewTTRS (RC)';
+				break;
+			case 'ttr':
+				piFunction = piTTR;
+				systemName = 'TTR';
+				break;
+			case 'usatt':
+				piFunction = piUSATT;
+				systemName = 'USATT';
+				break;
+			default:
+				piFunction = piNewTTRS;
+				systemName = 'NewTTRS (RC)';
+		}
+		
 		const result = calculateOptimalHandicap(ratingDiff, setsToWin, piFunction);
 		
-		const systemName = system === 'newttrs' ? 'NewTTRS (RC)' : 'TTR';
-		
-		let resultText = `<strong>Optimal Handicap: ${result.handicap} points</strong><br>`;
-		resultText += `System: ${systemName}<br>`;
-		resultText += `Player 1 Rating: ${player1Rating}<br>`;
-		resultText += `Player 2 Rating: ${player2Rating}<br>`;
-		resultText += `Rating Difference: ${ratingDiff}<br>`;
-		resultText += `Final Match Probability: ${(result.finalMatchProb * 100).toFixed(1)}%`;
+		let resultText = `Weaker player has a ${(result.finalMatchProb * 100).toFixed(1)}% chance to win a Bo5 match with a <strong>handicap of ${result.handicap} points</strong>.`;
 		
 		document.getElementById('calculatorResult').innerHTML = resultText;
 		document.getElementById('calculatorResult').classList.remove('hidden');
@@ -636,7 +696,7 @@
 		// Function to convert handicap to y coordinate
 		const handicapToY = (handicap) => canvas.height - padding - (handicap / maxHandicap) * plotHeight;
 		
-		// Generate data points for both systems
+		// Generate data points for all systems
 		const generateDataPoints = (piFunction, step = 5) => {
 			const points = [];
 			for(let rating = 0; rating <= maxRating; rating += step) {
@@ -648,6 +708,7 @@
 		
 		const newttrsPoints = generateDataPoints(piNewTTRS);
 		const ttrPoints = generateDataPoints(piTTR);
+		const usattPoints = generateDataPoints(piUSATT);
 		
 		// Draw NewTTRS line
 		ctx.strokeStyle = '#2563eb';
@@ -679,8 +740,23 @@
 		});
 		ctx.stroke();
 		
+		// Draw USATT line
+		ctx.strokeStyle = '#dc2626';
+		ctx.lineWidth = 3;
+		ctx.beginPath();
+		usattPoints.forEach((point, index) => {
+			const x = ratingToX(point.rating);
+			const y = handicapToY(point.handicap);
+			if(index === 0) {
+				ctx.moveTo(x, y);
+			} else {
+				ctx.lineTo(x, y);
+			}
+		});
+		ctx.stroke();
+		
 		// Draw legend
-		const legendX = canvas.width - 150;
+		const legendX = canvas.width - 200;
 		const legendY = 30;
 		
 		ctx.font = '14px system-ui';
@@ -705,6 +781,16 @@
 		ctx.stroke();
 		ctx.fillStyle = '#333';
 		ctx.fillText('TTR', legendX + 35, legendY + 29);
+		
+		// USATT legend
+		ctx.strokeStyle = '#dc2626';
+		ctx.lineWidth = 3;
+		ctx.beginPath();
+		ctx.moveTo(legendX, legendY + 50);
+		ctx.lineTo(legendX + 30, legendY + 50);
+		ctx.stroke();
+		ctx.fillStyle = '#333';
+		ctx.fillText('USATT', legendX + 35, legendY + 54);
 	}
 	
 	// Generate results
